@@ -25,10 +25,10 @@ var main = {
 
         if (current.getDate() <= until.getDate()) {
             if (current.getHours() >= until.getHours()) {
-                main.updateTimeholder(undefined, false, (until.getHours() - current.GetHours()) <= 0);
+                main.updateTimeholder(undefined, false, ((until.getHours() - current.GetHours()) <= 0);
             } else {
                 var timeDifference = main.calulateDifference(current, until);
-                main.updateTimeholder(timeDifference);
+                main.updateTimeholder(timeDifference, false, ((until.getHours() - current.GetHours()) <= 0);
             }
         } else {
             console.log("I'm home!");
