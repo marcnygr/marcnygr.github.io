@@ -60,7 +60,9 @@ var main = {
         }
 
         if (!!isTime) {
-            timeHolderElement.appendChild(document.createElement("span").textContent('It\'s ' + main.hintTextSubject));
+            var itsTimeElement = document.createElement("span");
+            itsTimeElement.innerText = 'It\'s ' + main.hintTextSubject + '!';
+            timeHolderElement.appendChild(itsTimeElement);
         }
 
         if (!!almost) {
