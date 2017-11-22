@@ -60,6 +60,7 @@ var main = {
         }
 
         if (!!isTime) {
+            hintTextElement.innerHTML = "";
             var itsTimeElement = document.createElement("span");
             itsTimeElement.innerText = 'It\'s ' + main.hintTextSubject + '!';
             timeHolderElement.appendChild(itsTimeElement);
