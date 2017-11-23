@@ -17,7 +17,7 @@ var main = {
     textChanged: false,
     displayingSadGirl: false,
     displayingHappyGirl: false,
-    displayingFinalText: false;
+    displayingFinalText: false,
     animationLimit: 30 * appGlobals.minutes,
     animationIntenseLimit: 5 * appGlobals.minutes,
 
@@ -134,11 +134,11 @@ var main = {
                 main.displayingSadGirl = false;
             }
 
-            if(!!main.displayingFinalText) {
+            if(!main.displayingFinalText) {
                 hintTextElement.innerHTML = '';
                 var itsTimeElement = document.createElement('span');
                 itsTimeElement.innerText = 'It\'s ' + main.hintTextSubject + '!';
-                timeHolderElement.appendChild(itsTimeElement);
+                hintTextElement.appendChild(itsTimeElement);
                 main.displayingFinalText = true;
             }
         }
