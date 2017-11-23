@@ -6,6 +6,7 @@ var appGlobals = {
         '60': (1000 / 60),
         '30': (1000 / 30),
         '15': (1000 / 15),
+        '5': (1000 / 5),
     }
 };
 
@@ -16,6 +17,7 @@ var main = {
     textChanged: false,
     displayingSadGirl: false,
     displayingHappyGirl: false,
+    displayingFinalText: false;
     animationLimit: 30 * appGlobals.minutes,
     animationIntenseLimit: 5 * appGlobals.minutes,
 
@@ -33,25 +35,23 @@ var main = {
         var current = main.getTime();
 
         if (current.getHours() <= 3) {
-            main.updateTimeholder(undefined, true);
+            main.updateTimeholder(undefined);
         }
 
-        if (current < until) {
-            var timeDifference = main.calulateDifference(current, until);
-            main.updateTimeholder(timeDifference, (current >= until));
-            //}
-        } else {
-            main.updateTimeholder(undefined, true);
-        }
+        var timeDifference = main.calulateDifference(current, until);
+        main.updateTimeholder(timeDifference, (current >= until));
     },
 
-    updateTimeholder: function (timeDifference, isTime) {
+    updateTimeholder: function (timeDifference) {
         'use strict';
+
+        var isTime = timeDifference.totalDifference <= 0;
+
         var timeHolderElement = document.getElementById('timeholder');
         var hintTextElement = document.getElementById('hint');
         timeHolderElement.innerHTML = '';
 
-        if (!!timeDifference) {
+        if (timeDifference.totalDifference >= 0) {
             if (!!timeDifference.days) {
                 timeHolderElement.appendChild(main.createTimeElement(timeDifference.days, 'day'));
             }
@@ -67,71 +67,80 @@ var main = {
             if (!!timeDifference.milliseconds || timeDifference.milliseconds === 0) {
                 timeHolderElement.appendChild(main.createTimeElement(timeDifference.milliseconds, 'millisecond'));
             }
+        }
 
-            if (!main.textChanged) {
-                if (timeDifference.totalDifference <= 5 * appGlobals.minutes) {
-                    hintTextElement.innerText = main.hintTextAlmost + main.hintTextSubject + '!';
-                    main.textChanged = true;
-                }
-            } else {
-                if (timeDifference.totalDifference > 5 * appGlobals.minutes) {
-                    hintTextElement.innerText = main.hintText + main.hintTextSubject + '?';
-                    main.textChanged = false;
-                }
+        if (!main.textChanged) {
+            if (timeDifference.totalDifference <= 5 * appGlobals.minutes) {
+                hintTextElement.innerText = main.hintTextAlmost + main.hintTextSubject + '!';
+                main.textChanged = true;
+                main.displayingFinalText = false;
             }
-
-            var imageHolder = document.getElementById('imageholder');
-            var imageElement = document.createElement('img');
-            if (!isTime && !main.displayingSadGirl && timeDifference.totalDifference > 6 * appGlobals.hours) {
-                imageHolder.innerHTML = '';
-                imageElement.id = 'sadimage';
-                imageElement.src = 'sadgirl.png';
-                imageElement.alt = 'Image of a girl';
-                imageElement.classList = 'sobbing';
-                imageHolder.appendChild(imageElement);
-                main.displayingSadGirl = true;
-            }
-
-            if (main.displayingSadGirl && timeDifference.totalDifference < 6 * appGlobals.hours) {
-                imageHolder.innerHTML = '';
-                main.displayingSadGirl = false;
-            }
-
-            if (!main.displayingHappyGirl && (timeDifference.totalDifference <= main.animationLimit)) {  
-                imageHolder.innerHTML = '';
-                main.displayingHappyGirl = true;
-                imageElement.id = 'girlimage';
-                imageElement.src = 'girl.png';
-                imageElement.alt = 'Image of a girl';
-                imageElement.classList = 'shaking';
-                imageHolder.appendChild(imageElement);
-
-            }
-
-            if (main.displayingHappyGirl) {
-                if (timeDifference.totalDifference > main.animationLimit) {
-                    imageHolder.innerHTML = '';
-                    main.displayingHappyGirl = false;
-                } else {
-                    var girlImage = document.getElementById('girlimage');
-                    if (!!girlImage) {
-                        if (timeDifference.totalDifference <= main.animationIntenseLimit) {
-                            girlImage.classList.add('intense');
-                        } else {
-                            girlImage.classList.remove('intense');
-                        }
-                    } else {
-                        main.displayingHappyGirl = false;
-                    }
-                }
+        } else {
+            if (timeDifference.totalDifference > 5 * appGlobals.minutes) {
+                hintTextElement.innerText = main.hintText + main.hintTextSubject + '?';
+                main.textChanged = false;
+                main.displayingFinalText = false;
             }
         }
 
+        var imageHolder = document.getElementById('imageholder');
+        var imageElement = document.createElement('img');
+        if (!isTime && !main.displayingSadGirl && timeDifference.totalDifference > 6 * appGlobals.hours) {
+            imageHolder.innerHTML = '';
+            imageElement.id = 'sadimage';
+            imageElement.src = 'sadgirl.png';
+            imageElement.alt = 'Image of a girl';
+            imageElement.classList = 'sobbing';
+            imageHolder.appendChild(imageElement);
+            main.displayingSadGirl = true;
+        }
+
+        if (main.displayingSadGirl && timeDifference.totalDifference < 6 * appGlobals.hours) {
+            imageHolder.innerHTML = '';
+            main.displayingSadGirl = false;
+        }
+
+        if (!main.displayingHappyGirl && (timeDifference.totalDifference <= main.animationLimit)) {
+            imageHolder.innerHTML = '';
+            main.displayingHappyGirl = true;
+            imageElement.id = 'girlimage';
+            imageElement.src = 'girl.png';
+            imageElement.alt = 'Image of a girl';
+            imageElement.classList = 'shaking';
+            imageHolder.appendChild(imageElement);
+        }
+
+        if (main.displayingHappyGirl) {
+            if (timeDifference.totalDifference > main.animationLimit) {
+                imageHolder.innerHTML = '';
+                main.displayingHappyGirl = false;
+            } else {
+                var girlImage = document.getElementById('girlimage');
+                if (!!girlImage) {
+                    if (timeDifference.totalDifference <= main.animationIntenseLimit) {
+                        girlImage.classList.add('intense');
+                    } else {
+                        girlImage.classList.remove('intense');
+                    }
+                } else {
+                    main.displayingHappyGirl = false;
+                }
+            }
+        }
         if (!!isTime) {
-            hintTextElement.innerHTML = '';
-            var itsTimeElement = document.createElement('span');
-            itsTimeElement.innerText = 'It\'s ' + main.hintTextSubject + '!';
-            timeHolderElement.appendChild(itsTimeElement);
+            if(timeDifference.totalDifference <= -1 * appGlobals.hours) {
+                imageHolder.innerHTML = '';
+                main.displayingHappyGirl = false;
+                main.displayingSadGirl = false;
+            }
+
+            if(!!main.displayingFinalText) {
+                hintTextElement.innerHTML = '';
+                var itsTimeElement = document.createElement('span');
+                itsTimeElement.innerText = 'It\'s ' + main.hintTextSubject + '!';
+                timeHolderElement.appendChild(itsTimeElement);
+                main.displayingFinalText = true;
+            }
         }
     },
 
