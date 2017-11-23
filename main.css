@@ -1,0 +1,11 @@
+#timeholder .timeunit {
+    display: inline-block;
+}
+
+#timeholder .timeunit span { 
+    margin-right: 0.2em;
+    font-size: 1.2rem;
+}
+#timeholder .timeunit span.unit { 
+    margin-right: 0.4em;
+}

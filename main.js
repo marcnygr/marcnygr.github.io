@@ -1,13 +1,14 @@
 /* global document, window */
 
 var main = {
-    refreshRate: (1000 / 1),
+    refreshRate: (1000 / 60),
     hintText: 'How long until ',
     hintTextAlmost: 'It\'s Almost ',
     hintTextSubject: 'Video Game and Anime Time',
 
 
     init: function () {
+        'use strict';
         main.refresh();
         window.setInterval(function () {
             main.refresh();
@@ -23,7 +24,7 @@ var main = {
             main.updateTimeholder(undefined, true);
         }
 
-        if (current.getDate() < until.getDate()) {
+        if (current < until) {
             if (current.getHours() >= until.getHours()) {
                 main.updateTimeholder(undefined, false, ((until.getHours() - current.getHours()) <= 0));
             } else {
@@ -45,16 +46,16 @@ var main = {
             if (!!timeDifference.days) {
                 timeHolderElement.appendChild(main.createTimeElement(timeDifference.days, 'day'));
             }
-            if (!!timeDifference.hours) {
+            if (!!timeDifference.hours || timeDifference.hours === 0) {
                 timeHolderElement.appendChild(main.createTimeElement(timeDifference.hours, 'hour'));
             }
-            if (!!timeDifference.minutes) {
+            if (!!timeDifference.minutes || timeDifference.minutes === 0) {
                 timeHolderElement.appendChild(main.createTimeElement(timeDifference.minutes, 'minute'));
             }
-            if (!!timeDifference.seconds) {
+            if (!!timeDifference.seconds || timeDifference.seconds === 0) {
                 timeHolderElement.appendChild(main.createTimeElement(timeDifference.seconds, 'second'));
             }
-            if (!!timeDifference.milliseconds) {
+            if (!!timeDifference.milliseconds || timeDifference.milliseconds === 0) {
                 timeHolderElement.appendChild(main.createTimeElement(timeDifference.milliseconds, 'millisecond'));
             }
         }
@@ -75,14 +76,27 @@ var main = {
 
     createTimeElement: function (thing, thingUnit) {
         'use strict';
-
-        if (thing > 1) {
-            thingUnit += 's';
+        var displayUnit = thingUnit;
+        if (thing === 1) {
+            displayUnit += 's';
         }
 
-        var timeElement = document.createElement('span');
-        timeElement.innerText = thing + ' ' + thingUnit;
-        return timeElement;
+        var wrapperElement = document.createElement('p');
+        wrapperElement.classList.add("timeunit");
+        wrapperElement.classList.add(thingUnit);
+
+        var timeElement = document.createElement("span");
+        timeElement.classList.add("time");
+        timeElement.innerText = thing;
+
+        var unitElement = document.createElement("span");
+        unitElement.classList.add("unit");
+        unitElement.innerText = displayUnit;
+
+        wrapperElement.appendChild(timeElement);
+        wrapperElement.appendChild(unitElement);
+
+        return wrapperElement;
 
     },
 
@@ -114,31 +128,31 @@ var main = {
 
 
         var intDays = parseInt(days);
-        if (intDays > 0) {
+        if (intDays >= 0) {
             differenceObject.days = intDays;
             differenceString += intDays + ' days, ';
             hours = hours % 24;
         }
         var intHours = parseInt(hours);
-        if (intHours > 0) {
+        if (intHours >= 0) {
             differenceObject.hours = intHours;
             differenceString += intHours + ' hours, ';
             minutes = minutes % 60;
         }
         var intMinutes = parseInt(minutes);
-        if (intMinutes > 0) {
+        if (intMinutes >= 0) {
             differenceObject.minutes = intMinutes;
             differenceString += intMinutes + ' minutes, ';
             seconds = seconds % 60;
         }
         var intSeconds = parseInt(seconds);
-        if (intSeconds > 0) {
+        if (intSeconds >= 0) {
             differenceObject.seconds = intSeconds;
             differenceString += intSeconds + ' seconds, ';
             milliseconds = milliseconds % 1000;
         }
         var intMilliseconds = parseInt(milliseconds);
-        if (intMilliseconds > 0) {
+        if (intMilliseconds >= 0) {
             differenceObject.milliseconds = intMilliseconds;
             differenceString += intMilliseconds + ' milliseconds';
         }
