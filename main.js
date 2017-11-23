@@ -77,7 +77,7 @@ var main = {
     createTimeElement: function (thing, thingUnit) {
         'use strict';
         var displayUnit = thingUnit;
-        if (thing === 1) {
+        if (thing !== 1) {
             displayUnit += 's';
         }
 
