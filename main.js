@@ -1,18 +1,30 @@
 /* global document, window */
+var appGlobals = {
+    minutes: (1000 * 60),
+    hours: (1000 * 60 * 60),
+    refreshRates: {
+        '60': (1000 / 60),
+        '30': (1000 / 30),
+        '15': (1000 / 15),
+    }
+};
 
 var main = {
-    refreshRate: (1000 / 60),
     hintText: 'How long until ',
     hintTextAlmost: 'It\'s Almost ',
     hintTextSubject: 'Video Game and Anime Time',
-
+    textChanged: false,
+    displayingSadGirl: false,
+    displayingHappyGirl: false,
+    animationLimit: 30 * appGlobals.minutes,
+    animationIntenseLimit: 5 * appGlobals.minutes,
 
     init: function () {
         'use strict';
         main.refresh();
         window.setInterval(function () {
             main.refresh();
-        }, main.refreshRate);
+        },  appGlobals.refreshRates['30']);
     },
 
     refresh: function () {
@@ -25,22 +37,19 @@ var main = {
         }
 
         if (current < until) {
-            if (current.getHours() >= until.getHours()) {
-                main.updateTimeholder(undefined, false, ((until.getHours() - current.getHours()) <= 0));
-            } else {
-                var timeDifference = main.calulateDifference(current, until);
-                main.updateTimeholder(timeDifference, false, ((until.getHours() - current.getHours()) <= 0));
-            }
+            var timeDifference = main.calulateDifference(current, until);
+            main.updateTimeholder(timeDifference, (current >= until));
+            //}
         } else {
-            main.updateTimeholder(undefined, true, false);
+            main.updateTimeholder(undefined, true);
         }
     },
 
-    updateTimeholder: function (timeDifference, isTime, almost) {
+    updateTimeholder: function (timeDifference, isTime) {
         'use strict';
-        var timeHolderElement = document.getElementById("timeholder");
-        var hintTextElement = document.getElementById("hint");
-        timeHolderElement.innerHTML = "";
+        var timeHolderElement = document.getElementById('timeholder');
+        var hintTextElement = document.getElementById('hint');
+        timeHolderElement.innerHTML = '';
 
         if (!!timeDifference) {
             if (!!timeDifference.days) {
@@ -58,19 +67,71 @@ var main = {
             if (!!timeDifference.milliseconds || timeDifference.milliseconds === 0) {
                 timeHolderElement.appendChild(main.createTimeElement(timeDifference.milliseconds, 'millisecond'));
             }
+
+            if (!main.textChanged) {
+                if (timeDifference.totalDifference <= 5 * appGlobals.minutes) {
+                    hintTextElement.innerText = main.hintTextAlmost + main.hintTextSubject + '!';
+                    main.textChanged = true;
+                }
+            } else {
+                if (timeDifference.totalDifference > 5 * appGlobals.minutes) {
+                    hintTextElement.innerText = main.hintText + main.hintTextSubject + '?';
+                    main.textChanged = false;
+                }
+            }
+
+            var imageHolder = document.getElementById('imageholder');
+            var imageElement = document.createElement('img');
+            if (!isTime && !main.displayingSadGirl && timeDifference.totalDifference > 6 * appGlobals.hours) {
+                imageHolder.innerHTML = '';
+                imageElement.id = 'sadimage';
+                imageElement.src = 'sadgirl.png';
+                imageElement.alt = 'Image of a girl';
+                imageElement.classList = 'sobbing';
+                imageHolder.appendChild(imageElement);
+                main.displayingSadGirl = true;
+            }
+
+            if (main.displayingSadGirl && timeDifference.totalDifference < 6 * appGlobals.hours) {
+                imageHolder.innerHTML = '';
+                main.displayingSadGirl = false;
+            }
+
+            if (!main.displayingHappyGirl && (timeDifference.totalDifference <= main.animationLimit)) {  
+                imageHolder.innerHTML = '';
+                main.displayingHappyGirl = true;
+                imageElement.id = 'girlimage';
+                imageElement.src = 'girl.png';
+                imageElement.alt = 'Image of a girl';
+                imageElement.classList = 'shaking';
+                imageHolder.appendChild(imageElement);
+
+            }
+
+            if (main.displayingHappyGirl) {
+                if (timeDifference.totalDifference > main.animationLimit) {
+                    imageHolder.innerHTML = '';
+                    main.displayingHappyGirl = false;
+                } else {
+                    var girlImage = document.getElementById('girlimage');
+                    if (!!girlImage) {
+                        if (timeDifference.totalDifference <= main.animationIntenseLimit) {
+                            girlImage.classList.add('intense');
+                        } else {
+                            girlImage.classList.remove('intense');
+                        }
+                    } else {
+                        main.displayingHappyGirl = false;
+                    }
+                }
+            }
         }
 
         if (!!isTime) {
-            hintTextElement.innerHTML = "";
-            var itsTimeElement = document.createElement("span");
+            hintTextElement.innerHTML = '';
+            var itsTimeElement = document.createElement('span');
             itsTimeElement.innerText = 'It\'s ' + main.hintTextSubject + '!';
             timeHolderElement.appendChild(itsTimeElement);
-        }
-
-        if (!!almost) {
-            hintTextElement.innerText = main.hintTextAlmost + main.hintTextSubject + '!';
-        } else {
-            hintTextElement.innerText = main.hintText + main.hintTextSubject + '?';
         }
     },
 
@@ -82,15 +143,15 @@ var main = {
         }
 
         var wrapperElement = document.createElement('p');
-        wrapperElement.classList.add("timeunit");
+        wrapperElement.classList.add('timeunit');
         wrapperElement.classList.add(thingUnit);
 
-        var timeElement = document.createElement("span");
-        timeElement.classList.add("time");
+        var timeElement = document.createElement('span');
+        timeElement.classList.add('time');
         timeElement.innerText = thing;
 
-        var unitElement = document.createElement("span");
-        unitElement.classList.add("unit");
+        var unitElement = document.createElement('span');
+        unitElement.classList.add('unit');
         unitElement.innerText = displayUnit;
 
         wrapperElement.appendChild(timeElement);
@@ -117,7 +178,7 @@ var main = {
 
     calulateDifference: function (current, until) {
         'use strict';
-        var differenceString = "";
+        var differenceString = '';
         var differenceObject = {};
 
         var milliseconds = until - current;
@@ -126,6 +187,7 @@ var main = {
         var hours = minutes / 60;
         var days = hours / 24;
 
+        differenceObject.totalDifference = milliseconds;
 
         var intDays = parseInt(days);
         if (intDays >= 0) {
@@ -157,7 +219,7 @@ var main = {
             differenceString += intMilliseconds + ' milliseconds';
         }
 
-        var lastComma = differenceString.lastIndexOf(",");
+        var lastComma = differenceString.lastIndexOf(',');
         differenceString = differenceString.substring(0, lastComma) + ' and ' + differenceString.substring(lastComma + 1);
         differenceString = differenceString.replace(/\s\s+/g, ' ');
         differenceObject.string = differenceString;

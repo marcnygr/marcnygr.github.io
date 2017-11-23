@@ -1,11 +1,72 @@
 #timeholder .timeunit {
     display: inline-block;
 }
-
 #timeholder .timeunit span { 
     margin-right: 0.2em;
     font-size: 1.2rem;
 }
 #timeholder .timeunit span.unit { 
     margin-right: 0.4em;
+}
+
+#imageholder {
+    display: inline-block;
+    width: 200px;
+    text-align: center;
+}
+
+#imageholder img {
+    max-width: 200px;
+}
+
+.sobbing {
+    animation-name: sobbing;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+}
+
+.shaking {
+    animation-name: normalshake;
+    animation-duration: 0.3s;
+    animation-iteration-count: infinite;
+}
+
+.shaking.intense {
+    animation-name: intenseshake;
+    animation-duration: 0.1s;
+}
+
+#sadgirl {
+    width: 250px;
+    height: 280px;
+}
+
+@keyframes sobbing {
+    0% {width: 230px;height: 280px;}
+    10% {width: 200px;height: 280px;}
+    20% {width: 150px;height: 280px;} 
+    30% {width: 135px;height: 280px;} 
+    40% {width: 200px;height: 280px;} 
+    50% {width: 165px;height: 280px;} 
+    60% {width: 200px;height: 280px;} 
+    70% {width: 180px;height: 280px;} 
+    80% {width: 165px;height: 280px;} 
+    90% {width: 200px;height: 280px;} 
+    100% {width: 230px;height: 280px;}
+}
+
+@keyframes normalshake {
+    0% {margin-top: 0px;}
+    25% {margin-top: 6px;}
+    50% {margin-top: 2px;}
+    75% {margin-top: 8px;}
+    100% {margin-top: 4px;}
+}
+
+@keyframes intenseshake {
+    0% {margin-left: 16px; margin-top: 0px;}
+    25% {margin-left: -4px; margin-top: -12px;}
+    50% {margin-left: 2px; margin-top: 10px;}
+    75% {margin-left: 10px; margin-top: -8px;}
+    100% {margin-left: -16px; margin-top: 16px;}
 }
