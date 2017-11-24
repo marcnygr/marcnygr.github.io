@@ -276,7 +276,6 @@ var main = {
 
     isFridayNight: function () {
         'use strict'
-        return true;
         var currentTime = main.getTime();
         return ((currentTime.getDay() === 5) && currentTime.getHours() >= 19)
     }
