@@ -19,6 +19,10 @@
     max-width: 200px;
 }
 
+#fridaynight img {
+    max-width: 400px;
+}
+
 .sobbing {
     animation-name: sobbing;
     animation-duration: 3s;

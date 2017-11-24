@@ -15,9 +15,11 @@ var main = {
     hintTextAlmost: 'It\'s Almost ',
     hintTextSubject: 'Video Game and Anime Time',
     textChanged: false,
+    imagesPath: '../images/',
     displayingSadGirl: false,
     displayingHappyGirl: false,
     displayingFinalText: false,
+    displayingFridayNightExtra: false,
     animationLimit: 30 * appGlobals.minutes,
     animationIntenseLimit: 5 * appGlobals.minutes,
 
@@ -88,7 +90,7 @@ var main = {
         if (!isTime && !main.displayingSadGirl && timeDifference.totalDifference > 6 * appGlobals.hours) {
             imageHolder.innerHTML = '';
             imageElement.id = 'sadimage';
-            imageElement.src = 'sadgirl.png';
+            imageElement.src = main.createImagePath('sadgirl.png');
             imageElement.alt = 'Image of a girl';
             imageElement.classList = 'sobbing';
             imageHolder.appendChild(imageElement);
@@ -104,7 +106,7 @@ var main = {
             imageHolder.innerHTML = '';
             main.displayingHappyGirl = true;
             imageElement.id = 'girlimage';
-            imageElement.src = 'girl.png';
+            imageElement.src = main.createImagePath('girl.png');
             imageElement.alt = 'Image of a girl';
             imageElement.classList = 'shaking';
             imageHolder.appendChild(imageElement);
@@ -127,6 +129,37 @@ var main = {
                 }
             }
         }
+
+        if (main.isFridayNight()) {
+            if (!main.displayingFridayNightExtra) {
+                main.displayingFridayNightExtra = true;
+                var mainWrapper = document.getElementById('main');
+                var fridayElement = document.createElement('div');
+                fridayElement.id = 'fridaynight';
+                
+                var fridayImage = document.createElement('img');
+                
+                var images = ['homealonebad.png', 'homealonegood.png'];
+                var index = Math.floor((Math.random() * images.length));
+                console.log(index);
+                var selectedImage = images[index];
+                console.log(selectedImage);
+                fridayImage.src = main.createImagePath(selectedImage);
+                fridayImage.alt = 'Friday Night image';
+                fridayElement.appendChild(fridayImage);
+                mainWrapper.appendChild(fridayElement);
+            }
+        } else {
+            if (main.displayingFridayNightExtra) {
+                var mainWrapper = document.getElementById('main');
+                var fridaynight = document.getElementById('fridaynight');
+                if (!!fridaynight) {
+                    mainWrapper.removeChild(fridaynight);
+                }
+                main.displayingFridayNightExtra = false;
+            } 
+        }
+
         if (!!isTime) {
             if(timeDifference.totalDifference <= -1 * appGlobals.hours) {
                 imageHolder.innerHTML = '';
@@ -134,7 +167,7 @@ var main = {
                 main.displayingSadGirl = false;
             }
 
-            if(!main.displayingFinalText) {
+            if (!main.displayingFinalText) {
                 hintTextElement.innerHTML = '';
                 var itsTimeElement = document.createElement('span');
                 itsTimeElement.innerText = 'It\'s ' + main.hintTextSubject + '!';
@@ -234,6 +267,18 @@ var main = {
         differenceObject.string = differenceString;
 
         return differenceObject;
+    },
+
+    createImagePath: function (filename) {
+        'use strict'
+        return main.imagesPath + filename;
+    },
+
+    isFridayNight: function () {
+        'use strict'
+        return true;
+        var currentTime = main.getTime();
+        return ((currentTime.getDay() === 5) && currentTime.getHours() >= 19)
     }
 };
 
