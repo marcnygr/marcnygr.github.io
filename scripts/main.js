@@ -36,18 +36,14 @@ var main = {
         var until = main.getUntilTime();
         var current = main.getTime();
 
-        if (current.getHours() <= 3) {
-            main.updateTimeholder(undefined);
-        }
-
         var timeDifference = main.calulateDifference(current, until);
-        main.updateTimeholder(timeDifference, (current >= until));
+        main.updateTimeholder(timeDifference, current);
     },
 
-    updateTimeholder: function (timeDifference) {
+    updateTimeholder: function (timeDifference, currentTime) {
         'use strict';
 
-        var isTime = timeDifference.totalDifference <= 0;
+        var isTime = (timeDifference.totalDifference <= 0 || currentTime.getHours() <= 3 || currentTime.getDay() > 5);
 
         var timeHolderElement = document.getElementById('timeholder');
         var hintTextElement = document.getElementById('hint');
