@@ -81,6 +81,7 @@ var main = {
             }
         }
 
+        var isFridayNight = main.isFridayNight()
         var imageHolder = document.getElementById('imageholder');
         var imageElement = document.createElement('img');
         if (!isTime && !main.displayingSadGirl && timeDifference.totalDifference > 6 * appGlobals.hours) {
@@ -92,13 +93,13 @@ var main = {
             imageHolder.appendChild(imageElement);
             main.displayingSadGirl = true;
         }
-
+        
         if (main.displayingSadGirl && timeDifference.totalDifference < 6 * appGlobals.hours) {
             imageHolder.innerHTML = '';
             main.displayingSadGirl = false;
         }
-
-        if (!main.displayingHappyGirl && (timeDifference.totalDifference <= main.animationLimit)) {
+        
+        if (!main.displayingHappyGirl && (Math.abs(timeDifference.totalDifference) <= main.animationLimit)) {
             imageHolder.innerHTML = '';
             main.displayingHappyGirl = true;
             imageElement.id = 'girlimage';
@@ -107,7 +108,7 @@ var main = {
             imageElement.classList = 'shaking';
             imageHolder.appendChild(imageElement);
         }
-
+        
         if (main.displayingHappyGirl) {
             if (timeDifference.totalDifference > main.animationLimit) {
                 imageHolder.innerHTML = '';
@@ -126,7 +127,7 @@ var main = {
             }
         }
 
-        if (main.isFridayNight()) {
+        if (isFridayNight) {
             if (!main.displayingFridayNightExtra) {
                 main.displayingFridayNightExtra = true;
                 var mainWrapper = document.getElementById('main');
@@ -153,12 +154,14 @@ var main = {
                     mainWrapper.removeChild(fridaynight);
                 }
                 main.displayingFridayNightExtra = false;
-            } 
+            }
         }
 
         if (!!isTime) {
             if(timeDifference.totalDifference <= -1 * appGlobals.hours) {
-                imageHolder.innerHTML = '';
+                if(!!imageHolder) {
+                    imageHolder.innerHTML = '';
+                }
                 main.displayingHappyGirl = false;
                 main.displayingSadGirl = false;
             }
